@@ -125,6 +125,7 @@ const sidebars: SidebarsConfig = {
 					label: "Customizing Kilo Code",
 					items: [
 						"advanced-usage/custom-rules",
+						"advanced-usage/kilocodeignore",
 						"advanced-usage/custom-instructions",
 						"features/slash-commands/workflows",
 					],

@@ -30,6 +30,7 @@ describe("RooIgnore Response Formatting", () => {
 	const TEST_CWD = "/test/path"
 	let mockFileExists: Mock<typeof fileExistsAtPath>
 	let mockReadFile: Mock<typeof fs.readFile>
+	let mockFsAccess: Mock<typeof fs.access>
 
 	beforeEach(() => {
 		// Reset mocks
@@ -38,10 +39,12 @@ describe("RooIgnore Response Formatting", () => {
 		// Setup fs mocks
 		mockFileExists = fileExistsAtPath as Mock<typeof fileExistsAtPath>
 		mockReadFile = fs.readFile as Mock<typeof fs.readFile>
+		mockFsAccess = fs.access as Mock<typeof fs.access>
 
 		// Default mock implementations
 		mockFileExists.mockResolvedValue(true)
 		mockReadFile.mockResolvedValue("node_modules\n.git\nsecrets/**\n*.log")
+		mockFsAccess.mockResolvedValue(undefined) // By default, files exist
 	})
 
 	describe("formatResponse.rooIgnoreError", () => {
@@ -238,6 +241,9 @@ describe("RooIgnore Response Formatting", () => {
 		it("should return undefined when no .kilocodeignore exists", async () => {
 			// Set up no .kilocodeignore
 			mockFileExists.mockResolvedValue(false)
+			mockFsAccess.mockImplementation(() => {
+				return Promise.reject(new Error("File not found"))
+			})
 
 			// Create controller without .kilocodeignore
 			const controller = new RooIgnoreController(TEST_CWD)

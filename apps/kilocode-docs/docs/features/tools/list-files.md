@@ -28,6 +28,7 @@ This tool lists all files and directories in a specified location, providing a c
 - Intelligently ignores common large directories like `node_modules` and `.git` in recursive mode
 - Respects `.gitignore` rules when in recursive mode
 - Marks files ignored by `.kilocodeignore` with a lock symbol (🔒) when `showKiloCodeIgnoredFiles` is enabled
+- Supports hierarchical `.kilocodeignore` files for fine-grained access control
 - Optimizes performance with level-by-level directory traversal
 - Sorts results to show directories before their contents, maintaining a logical hierarchy
 - Presents results in a clean, organized format
@@ -50,19 +51,20 @@ When the `list_files` tool is invoked, it follows this process:
 2. **Path Resolution**: Resolves the relative path to an absolute path
 3. **Security Checks**: Prevents listing files in sensitive locations like root or home directories
 4. **Directory Scanning**:
-   - For non-recursive mode: Lists only the top-level contents
-   - For recursive mode: Traverses the directory structure level by level with a 10-second timeout
-   - If timeout occurs, returns partial results collected up to that point
+    - For non-recursive mode: Lists only the top-level contents
+    - For recursive mode: Traverses the directory structure level by level with a 10-second timeout
+    - If timeout occurs, returns partial results collected up to that point
 5. **Result Filtering**:
-   - In recursive mode, skips common large directories like `node_modules`, `.git`, etc.
-   - Respects `.gitignore` rules when in recursive mode
-   - Handles `.kilocodeignore` patterns, either hiding files or marking them with a lock symbol
+    - In recursive mode, skips common large directories like `node_modules`, `.git`, etc.
+    - Respects `.gitignore` rules when in recursive mode
+    - Handles hierarchical `.kilocodeignore` patterns, either hiding files or marking them with a lock symbol
 6. **Formatting**:
-   - Marks directories with a trailing slash (`/`)
-   - Sorts results to show directories before their contents for logical hierarchy
-   - Marks ignored files with a lock symbol (🔒) when `showKiloCodeIgnored` is enabled
-   - Caps results at 200 files by default with a note about using subdirectories
-   - Organizes results for readability
+    - Marks directories with a trailing slash (`/`)
+    - Sorts results to show directories before their contents for logical hierarchy
+    - Marks ignored files with a lock symbol (🔒) when `showKiloCodeIgnored` is enabled
+    - Applies hierarchical `.kilocodeignore` rules from multiple directory levels
+    - Caps results at 200 files by default with a note about using subdirectories
+    - Organizes results for readability
 
 ## File Listing Format
 
@@ -70,11 +72,12 @@ The file listing results include:
 
 - Each file path is displayed on its own line
 - Directories are marked with a trailing slash (`/`)
-- Files ignored by `.kilocodeignore` are marked with a lock symbol (🔒) when `showKiloCodeIgnored` is enabled
+- Files ignored by hierarchical `.kilocodeignore` files are marked with a lock symbol (🔒) when `showKiloCodeIgnored` is enabled
 - Results are sorted logically with directories appearing before their contents
 - When the file limit is reached, a message appears suggesting to use `list_files` on specific subdirectories
 
 Example output format:
+
 ```
 src/
 src/components/
@@ -87,7 +90,8 @@ src/index.ts
 File listing truncated (showing 200 of 543 files). Use list_files on specific subdirectories for more details.
 ```
 
-When `.kilocodeignore` files are used and `showKiloCodeIgnored` is enabled:
+When hierarchical `.kilocodeignore` files are used and `showKiloCodeIgnored` is enabled:
+
 ```
 src/
 src/components/
@@ -109,6 +113,7 @@ src/index.ts
 ## Usage Examples
 
 Listing top-level files in the current directory:
+
 ```
 <list_files>
 <path>.</path>
@@ -116,6 +121,7 @@ Listing top-level files in the current directory:
 ```
 
 Recursively listing all files in a source directory:
+
 ```
 <list_files>
 <path>src</path>
@@ -124,6 +130,7 @@ Recursively listing all files in a source directory:
 ```
 
 Examining a specific project subdirectory:
+
 ```
 <list_files>
 <path>src/components</path>
